@@ -1,0 +1,125 @@
+{
+  "company": {
+    "name": "Senus PLC",
+    "ticker": "SENUS",
+    "isin": "IE000O0F49R3",
+    "exchange": "Euronext Access+ Dublin",
+    "listing_date": "2025-12-22",
+    "shares_in_issue": 2561332,
+    "admission_share_price_eur": 5.126,
+    "market_cap_at_listing_eur": 13130349,
+    "sector": "Natural Capital management software",
+    "hq": "Athlone, Co. Roscommon, Ireland",
+    "employees": 18,
+    "fiscal_year_end": "30 June"
+  },
+  "source": {
+    "primary_document": "Senus PLC Information Document, December 2025 (Direct Listing on Euronext Access)",
+    "url": "https://live.euronext.com/sites/default/files/2025-12/SENUS%20PLC%20-%20Information%20Document.pdf",
+    "auditor": "AMQ Accountants Limited",
+    "note": "FY2024 and FY2025 figures are audited/reported historical financials extracted from Section 3/7.1 of the Information Document. No subsequent (H1 FY2026) results announcement could be independently located as a distinct filing at the time of writing; the platform is explicitly scoped to FY2024-FY2025 actuals plus Board-stated FY2026-2030 strategic targets, and is designed so a later period can be appended without any schema change."
+  },
+  "annual_financials": [
+    {
+      "fiscal_year": "FY2024",
+      "period_end": "2024-06-30",
+      "turnover": 688317,
+      "gross_profit": 432477,
+      "cost_of_sales": 255840,
+      "gross_margin_pct": 62.84,
+      "admin_expenses": 1560853,
+      "rd_expense_pct_revenue": 22.0,
+      "operating_profit_loss": -1130729,
+      "profit_loss_before_tax": -1130458,
+      "profit_loss_after_tax": -1098095,
+      "net_assets_liabilities": 574681,
+      "retained_earnings": -275425,
+      "cash_flow_operating": -1166697,
+      "cash_flow_investing": -33472,
+      "cash_flow_financing": -3846,
+      "net_change_in_cash": -1204015,
+      "cash_beginning": 1628654,
+      "cash_end": 424639,
+      "trade_debtors": 142361,
+      "trade_creditors": 26768,
+      "customers_total": null,
+      "revenue_international_pct": 5.0,
+      "revenue_ireland_pct": 95.0
+    },
+    {
+      "fiscal_year": "FY2025",
+      "period_end": "2025-06-30",
+      "turnover": 836991,
+      "gross_profit": 648450,
+      "cost_of_sales": 188541,
+      "gross_margin_pct": 77.5,
+      "admin_expenses": 1286058,
+      "rd_expense_pct_revenue": 17.0,
+      "operating_profit_loss": -633694,
+      "profit_loss_before_tax": -635768,
+      "profit_loss_after_tax": -590256,
+      "net_assets_liabilities": -15575,
+      "retained_earnings": -865681,
+      "cash_flow_operating": -374820,
+      "cash_flow_investing": -3451,
+      "cash_flow_financing": 93767,
+      "net_change_in_cash": -284504,
+      "cash_beginning": 424639,
+      "cash_end": 140135,
+      "trade_debtors": 66990,
+      "trade_creditors": 55246,
+      "customers_total": 138,
+      "customers_enterprise": 36,
+      "customers_independent": 98,
+      "customers_rd": 4,
+      "revenue_channel_enterprise_pct": 69.0,
+      "revenue_channel_independent_pct": 4.0,
+      "revenue_channel_rd_pct": 27.0,
+      "revenue_international_pct": 22.0,
+      "revenue_ireland_pct": 78.0,
+      "new_bank_loan_sbci": 100000,
+      "creditors_due_after_1yr_increase": 83655,
+      "acv_enterprise_soil": 12309,
+      "acv_enterprise_terrain": 21524,
+      "acv_enterprise_era": 58900
+    }
+  ],
+  "post_period_events": [
+    {
+      "date": "2025-11-14",
+      "event": "Loamin Acquisition",
+      "detail": "Acquired UK geospatial AI partner Loamin Ltd; consolidated from FY2026."
+    },
+    {
+      "date": "2025-12-18",
+      "event": "2025 Private Placement completed",
+      "detail": "Gross proceeds of EUR 1.1m raised ahead of Direct Listing, at a post-money enterprise valuation of EUR 13.1m.",
+      "gross_proceeds_eur": 1100000
+    },
+    {
+      "date": "2025-12-22",
+      "event": "Direct Listing",
+      "detail": "Admission to trading on Euronext Access+ Dublin."
+    }
+  ],
+  "strategy_targets": {
+    "name": "Senus 2030",
+    "period": "FY2026-FY2030",
+    "revenue_cagr_target_pct": 50.0,
+    "revenue_cagr_base_year": "FY2025",
+    "revenue_cagr_base_value": 836991,
+    "ebitda_positive_target_year": "FY2028",
+    "enterprise_customers_target": 100,
+    "enterprise_customers_target_year": "FY2030",
+    "avg_acv_target_eur": 50000,
+    "avg_acv_target_year": "FY2030",
+    "non_ireland_revenue_target_pct": 50.0,
+    "non_ireland_revenue_target_year": "FY2030"
+  },
+  "disclosure_gaps": [
+    "EBITDA is not separately disclosed (depreciation & amortisation is not broken out from admin expenses in the summarised financials), so it cannot be reliably derived without assumption. The platform surfaces Operating Loss alongside this caveat rather than inventing a D&A add-back.",
+    "Full current asset / current liability totals are not disclosed; only specific components (trade debtors, trade creditors, cash) are given, so a standard Current Ratio / Working Capital figure cannot be computed without assumption.",
+    "Interest expense and loan amortisation schedule are not separately disclosed, so a Debt Service Coverage Ratio cannot be reliably computed; net finance cost is shown instead.",
+    "Because FY2025 closed with net liabilities of EUR (15,575), ROCE is not meaningful (denominator near zero/negative) and is flagged as such rather than shown as a large or misleading percentage."
+  ]
+}
