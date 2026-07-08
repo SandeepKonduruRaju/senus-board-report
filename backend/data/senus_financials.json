@@ -8,21 +8,28 @@
     "shares_in_issue": 2561332,
     "admission_share_price_eur": 5.126,
     "market_cap_at_listing_eur": 13130349,
-    "sector": "Natural Capital management software",
-    "hq": "Athlone, Co. Roscommon, Ireland",
+    "sector": "Climate risk and soil health intelligence technology",
+    "hq": "Block D, Daneswell Business Centre, Monksland, Athlone, Co. Roscommon, Ireland",
     "employees": 18,
     "fiscal_year_end": "30 June"
   },
   "source": {
     "primary_document": "Senus PLC Information Document, December 2025 (Direct Listing on Euronext Access)",
     "url": "https://live.euronext.com/sites/default/files/2025-12/SENUS%20PLC%20-%20Information%20Document.pdf",
+    "h1_document": "Senus PLC Half Year Results for the 6 months ended 31 December 2025, published 19 March 2026",
+    "h1_note": "Published via the Assiduous-sponsored investor portal (app.assiduous.tech/investor-relations/senus) and senus.com/investors, both requiring authentication not available through public web search/fetch. Obtained directly and manually cross-checked against the P&L, Balance Sheet and Cash Flow Statement in the source document before being added below.",
     "auditor": "AMQ Accountants Limited",
-    "note": "FY2024 and FY2025 figures are audited/reported historical financials extracted from Section 3/7.1 of the Information Document. No subsequent (H1 FY2026) results announcement could be independently located as a distinct filing at the time of writing; the platform is explicitly scoped to FY2024-FY2025 actuals plus Board-stated FY2026-2030 strategic targets, and is designed so a later period can be appended without any schema change."
+    "h1_figures_status": "Unaudited (condensed interim financial statements per FRS 102 / Companies Act 2014, approved by the Board 18 March 2026)."
   },
   "annual_financials": [
     {
       "fiscal_year": "FY2024",
       "period_end": "2024-06-30",
+      "period_label": "FY2024",
+      "is_half_year": false,
+      "is_preliminary": false,
+      "source_document": "Senus PLC Information Document, Dec 2025",
+      "source_section": "Section 7.1 — Historical Financial Information",
       "turnover": 688317,
       "gross_profit": 432477,
       "cost_of_sales": 255840,
@@ -47,8 +54,42 @@
       "revenue_ireland_pct": 95.0
     },
     {
+      "fiscal_year": "H1_FY2025",
+      "period_end": "2024-12-31",
+      "period_label": "H1 FY2025",
+      "is_half_year": true,
+      "is_preliminary": false,
+      "source_document": "Senus PLC Half Year Results (comparative period), 19 Mar 2026",
+      "source_section": "Consolidated P&L / Balance Sheet / Cash Flow, comparatives column",
+      "turnover": 340931,
+      "gross_profit": 272331,
+      "cost_of_sales": 69600,
+      "gross_margin_pct": 79.87,
+      "admin_expenses": 677908,
+      "operating_profit_loss": -405577,
+      "profit_loss_before_tax": -406613,
+      "profit_loss_after_tax": -406613,
+      "net_assets_liabilities": 173316,
+      "retained_earnings": -676790,
+      "cash_flow_operating": -450181,
+      "cash_flow_investing": 0,
+      "cash_flow_financing": 97924,
+      "net_change_in_cash": -352257,
+      "cash_beginning": 424639,
+      "cash_end": 72382,
+      "trade_debtors": 211150,
+      "trade_creditors": null,
+      "new_bank_loan_sbci": null,
+      "creditors_due_after_1yr_increase": null
+    },
+    {
       "fiscal_year": "FY2025",
       "period_end": "2025-06-30",
+      "period_label": "FY2025",
+      "is_half_year": false,
+      "is_preliminary": false,
+      "source_document": "Senus PLC Information Document, Dec 2025",
+      "source_section": "Section 7.1 — Historical Financial Information",
       "turnover": 836991,
       "gross_profit": 648450,
       "cost_of_sales": 188541,
@@ -82,24 +123,70 @@
       "acv_enterprise_soil": 12309,
       "acv_enterprise_terrain": 21524,
       "acv_enterprise_era": 58900
+    },
+    {
+      "fiscal_year": "H1_FY2026",
+      "period_end": "2025-12-31",
+      "period_label": "H1 FY2026",
+      "is_half_year": true,
+      "is_preliminary": true,
+      "source_document": "Senus PLC Half Year Results for the 6 months ended 31 December 2025, published 19 Mar 2026",
+      "source_section": "Consolidated P&L / Balance Sheet / Cash Flow Statement",
+      "turnover": 354813,
+      "gross_profit": 289952,
+      "cost_of_sales": 64861,
+      "gross_margin_pct": 81.71,
+      "admin_expenses": 781975,
+      "other_operating_income": 8269,
+      "operating_profit_loss": -483753,
+      "interest_payable": 1391,
+      "profit_loss_before_tax": -485144,
+      "profit_loss_after_tax": -485144,
+      "net_assets_liabilities": 561081,
+      "retained_earnings": 236081,
+      "share_capital": 25000,
+      "share_premium": 300000,
+      "goodwill": 669550,
+      "development_costs": 239765,
+      "tangible_assets": 42006,
+      "cash_flow_operating": -410291,
+      "cash_flow_investing": -8500,
+      "cash_flow_financing": 1013846,
+      "net_change_in_cash": 595055,
+      "cash_beginning": 140135,
+      "cash_end": 735189,
+      "trade_debtors": 188149,
+      "trade_creditors": null,
+      "creditors_due_within_1yr": 387105,
+      "contingent_consideration_loamin": 850000,
+      "new_bank_loan_sbci": 76474,
+      "enterprise_customers_closed_in_period": 21,
+      "pipeline_value_closed_in_period_eur": 700000,
+      "pipeline_value_open_eur": 500000,
+      "equity_raised_in_period_eur": 1138683
     }
   ],
   "post_period_events": [
     {
       "date": "2025-11-14",
       "event": "Loamin Acquisition",
-      "detail": "Acquired UK geospatial AI partner Loamin Ltd; consolidated from FY2026."
+      "detail": "Acquired UK geospatial AI partner Loamin Ltd. Goodwill of EUR 669,550 recognised; no cash consideration paid on completion; contingent consideration of EUR 850,000 recognised, payable only if performance targets are achieved."
     },
     {
       "date": "2025-12-18",
       "event": "2025 Private Placement completed",
-      "detail": "Gross proceeds of EUR 1.1m raised ahead of Direct Listing, at a post-money enterprise valuation of EUR 13.1m.",
+      "detail": "Gross proceeds of EUR 1.1m raised ahead of Direct Listing (EUR 1,138,683 recognised in H1 FY2026 financing cash flows), at a post-money enterprise valuation of EUR 13.1m.",
       "gross_proceeds_eur": 1100000
     },
     {
       "date": "2025-12-22",
       "event": "Direct Listing",
       "detail": "Admission to trading on Euronext Access+ Dublin."
+    },
+    {
+      "date": "2026-03-19",
+      "event": "H1 FY2026 Half Year Results published",
+      "detail": "Unaudited results for the six months ended 31 December 2025. Revenue up 4.1% to EUR 354.8k; cash balance EUR 735.2k at period end after the equity raise; bank debt EUR 76.5k."
     }
   ],
   "strategy_targets": {
@@ -117,9 +204,9 @@
     "non_ireland_revenue_target_year": "FY2030"
   },
   "disclosure_gaps": [
-    "EBITDA is not separately disclosed (depreciation & amortisation is not broken out from admin expenses in the summarised financials), so it cannot be reliably derived without assumption. The platform surfaces Operating Loss alongside this caveat rather than inventing a D&A add-back.",
-    "Full current asset / current liability totals are not disclosed; only specific components (trade debtors, trade creditors, cash) are given, so a standard Current Ratio / Working Capital figure cannot be computed without assumption.",
-    "Interest expense and loan amortisation schedule are not separately disclosed, so a Debt Service Coverage Ratio cannot be reliably computed; net finance cost is shown instead.",
-    "Because FY2025 closed with net liabilities of EUR (15,575), ROCE is not meaningful (denominator near zero/negative) and is flagged as such rather than shown as a large or misleading percentage."
+    "EBITDA: D&A not fully broken out in FY2024/FY2025 summarised financials (H1 FY2026 does disclose depreciation of EUR 10,014 in the cash flow statement, but this is not present for the earlier audited years on a comparable basis) — not shown as a headline metric rather than estimated inconsistently across periods.",
+    "Current Ratio: FY2024/FY2025 only disclose specific components (debtors, creditors, cash), not full current asset/liability totals; H1 FY2026 does disclose full current assets/liabilities, so this becomes computable from H1 FY2026 onward — noted as a metric gap that closes over time as reporting granularity improves.",
+    "DSCR: interest expense is disclosed for H1 FY2026 (EUR 1,391) but no loan amortisation schedule is available in any period, so a genuine DSCR still cannot be computed.",
+    "ROCE: FY2025 closed with net liabilities — denominator near zero/negative, metric not meaningful for that period specifically. Net assets turned positive again in H1 FY2026 (EUR 561,081), so ROCE becomes potentially meaningful again from FY2026 onward once a full-year EBIT figure exists."
   ]
 }
