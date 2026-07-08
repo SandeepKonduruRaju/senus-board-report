@@ -135,14 +135,34 @@ def extract_from_text(document_text: str, client=None):
 
 
 def sanity_check(record: dict) -> list:
-    """Cheap validation before a record is allowed anywhere near the database."""
+    """
+    Cheap validation before a record is allowed anywhere near the database.
+
+    Note on an earlier version of this check: a prior version flagged any
+    record where profit_loss_after_tax > profit_loss_before_tax as a "sign
+    convention error". That's wrong — a tax credit legitimately makes an
+    after-tax loss smaller (less negative) than the pre-tax loss, and this
+    is exactly Senus's actual FY2025 pattern (PBT €(635,768) vs PAT
+    €(590,256), a ~€45k tax credit). The automated test suite caught this
+    producing a false positive against real audited data, which is why the
+    check below looks at the *size* of the tax adjustment relative to PBT
+    instead of its direction.
+    """
     issues = []
+
     gp, turnover = record.get("gross_profit"), record.get("turnover")
     if gp is not None and turnover is not None and gp > turnover:
         issues.append(f"gross_profit ({gp}) exceeds turnover ({turnover}) — implausible")
+
     pat, pbt = record.get("profit_loss_after_tax"), record.get("profit_loss_before_tax")
-    if pat is not None and pbt is not None and pat > pbt:
-        issues.append("post-tax profit exceeds pre-tax profit — check tax sign convention")
+    if pat is not None and pbt is not None and pbt != 0:
+        tax_adjustment = pat - pbt
+        if abs(tax_adjustment) > 0.5 * abs(pbt):
+            issues.append(
+                f"tax adjustment ({tax_adjustment:+.0f}) exceeds 50% of PBT "
+                f"({pbt:.0f}) — unusually large, worth double-checking against source"
+            )
+
     return issues
 
 

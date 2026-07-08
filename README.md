@@ -240,6 +240,32 @@ hardcoded for this assessment, not real auth). Use any of:
 | Board    | senus2030   |
 | Analyst  | senus2030   |
 
+## 7a. Running the test suite
+
+```bash
+cd backend
+pip install -r requirements-dev.txt
+pytest tests/ -v          # 17 tests: endpoints, KPI math, extraction guardrails
+flake8 app/ data/          # lint
+```
+
+Tests run against an isolated temp-file SQLite database (see
+`tests/conftest.py`), seeded via the same `seed_db.seed()` the real app
+uses — so they exercise the real seeding path, not a hand-rolled fixture
+that could quietly drift from it.
+
+One of these tests already earned its keep during development: an earlier
+version of `extract_financials.py`'s validation logic flagged Senus's real
+FY2025 tax credit (PAT less negative than PBT) as a "sign convention error"
+— which is wrong; a tax credit legitimately produces that pattern. The test
+`test_sanity_check_passes_valid_record` caught this as a false positive
+against real audited data, which is why the check was rewritten to look at
+the *size* of a tax adjustment relative to PBT instead of its direction —
+see the docstring in `extract_financials.py::sanity_check` for the full story.
+
+CI (`.github/workflows/ci.yml`) runs this test suite plus `flake8` on the
+backend and `npm run build` on the frontend for every push and pull request.
+
 ## 8. Deploying it (for the demo video / live link)
 
 - **Backend** → Render / Railway / Fly.io: point at `backend/`, start command
