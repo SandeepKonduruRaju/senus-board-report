@@ -82,10 +82,11 @@ extraction script and `seed_db.py`, with zero frontend changes required.
 This is the part of the brief I want to be very precise about, since it's the
 part most likely to raise a "how do I know this data is real" question.
 
-**Source:** the Senus PLC Information Document (December 2025), the company's
-own disclosure document for its Direct Listing — the same document referenced
-on the Senus investor relations page. It contains audited FY2024 and FY2025
-figures.
+**Source:** two documents. (1) The Senus PLC Information Document (December
+2025) — the company's Direct Listing disclosure — for audited FY2024/FY2025
+figures. (2) The Senus PLC Half Year Results for the six months ended 31
+December 2025 (published 19 March 2026), for H1 FY2026 and the H1 FY2025
+comparative period. Both are the company's own primary-source filings.
 
 **Extraction method:** `backend/data/extract_financials.py` implements the
 actual pipeline: it sends raw document text to Claude with a constrained
@@ -99,16 +100,30 @@ but couldn't find in `fields_not_found` rather than estimate it.
 **How the shipped dataset was actually built:** I extracted the FY2024/FY2025
 figures from the Information Document using this LLM-assisted approach, then
 manually cross-checked every figure in `senus_financials.json` against the
-source PDF before committing it — line by line, not spot-checked. That
-manual verification step is why I'm confident defending any number in this
-app; the AI accelerated transcription, it didn't replace review. The pipeline
-script is fully functional and will run against `ANTHROPIC_API_KEY` on any new
-disclosure Senus publishes (e.g. FY2026 half-year results) — I could not
-locate a distinct H1 FY2026 filing as its own document at the time of
-building this, so the platform is scoped to FY2024/FY2025 actuals plus the
-Board's own stated FY2026-2030 targets ("Senus 2030"), and is built so a new
-period slots in via `extract_financials.py` → review the diff → `seed_db.py`,
-with no schema or frontend change.
+source PDF before committing it — line by line, not spot-checked. The H1
+FY2026 filing (and its H1 FY2025 comparative column) is distributed via an
+authenticated investor portal and isn't reachable by public web search or
+fetch tools — I obtained the filing directly and applied the same
+line-by-line cross-check against its P&L, Balance Sheet, and Cash Flow
+Statement before adding it. That manual verification step is why I'm
+confident defending any number in this app; the AI accelerated transcription,
+it didn't replace review. The extraction script will run unattended against
+`ANTHROPIC_API_KEY` on any future disclosure Senus publishes (e.g. FY2026
+full-year results) — a new period slots in via `extract_financials.py` →
+review the diff → `seed_db.py`, with no schema or frontend change, exactly as
+happened when H1 FY2026 was added after the initial build.
+
+**A concrete example of why the manual cross-check matters:** the platform
+originally shipped an *illustrative* pro-forma cash runway estimate (FY2025
+cash + gross placement proceeds, FY2025 burn rate assumed) before H1 FY2026
+results existed. Once the actual H1 FY2026 figures were added, the real cash
+position came in lower than that estimate — not because the estimate was
+wrong given what was known at the time, but because H1 operating burn came in
+materially higher (Loamin integration costs) and a loan repayment wasn't
+anticipated. Rather than quietly replace the old estimate, the Cash &
+Liquidity section shows both side by side with an explanation of the
+variance — this is the kind of thing a Board should see, not something a
+dashboard should paper over.
 
 **Why `tool_use` and not just asking the model to "summarize the PDF":** a
 free-text extraction can quietly drop a sign, round a number, or paraphrase a
@@ -134,31 +149,45 @@ per-section in a way the fallback (intentionally) doesn't.
 
 I'd rather list these explicitly than have them discovered:
 
-- **EBITDA is not shown.** Depreciation & amortisation isn't broken out from
-  administrative expenses in Senus's summarised financials, so any EBITDA
-  figure would require an assumed D&A add-back. I chose not to invent one —
-  Operating Loss is shown as the closest genuinely disclosed proxy, with a
-  visible note explaining why.
-- **ROCE is flagged as "not meaningful" for FY2025**, because the Company
-  closed the year with net liabilities of €(15,575) — a near-zero/negative
-  capital employed figure makes the ratio swing wildly and would mislead a
-  reader rather than inform them.
-- **DSCR is not shown.** Interest expense and the SBCI loan's repayment
-  schedule aren't separately disclosed, so it can't be computed reliably.
-- **Current Ratio / full working capital is not shown**, for the same reason —
-  only specific components (trade debtors, trade creditors, cash) are
-  disclosed in the source, not full current asset/liability totals.
-- **The "pro-forma cash runway" figure is explicitly labelled illustrative.**
-  It combines the FY2025 closing cash position with the gross (not
-  net-of-fees) December 2025 Private Placement proceeds, assuming the FY2025
-  burn rate continues unchanged — which the Board's own growth investment
-  plans make unlikely. It's shown because it's a natural question a Board
-  would ask, but every place it appears says clearly that it's a model, not a
-  disclosed figure.
+- **EBITDA is not shown as a headline metric.** D&A isn't broken out from
+  administrative expenses in the FY2024/FY2025 summarised financials (H1
+  FY2026 does disclose depreciation of €10,014, but only for that period) —
+  rather than show EBITDA for some periods and not others on an inconsistent
+  basis, Operating Loss is shown throughout as the closest genuinely
+  disclosed proxy.
+- **ROCE is flagged as "not meaningful" for FY2025 specifically**, because
+  the Company closed that year with net liabilities of €(15,575) — a
+  near-zero/negative capital employed figure makes the ratio swing wildly.
+  Net assets turned positive again in H1 FY2026 (€561,081), so this is a
+  point-in-time flag, not a permanent one.
+- **DSCR is still not shown**, even though H1 FY2026 discloses interest
+  payable (€1,391) for the first time — no loan amortisation schedule is
+  available in any period, so a genuine debt service coverage figure still
+  can't be computed reliably.
+- **Current Ratio is now computable from H1 FY2026 onward**, since that
+  filing discloses full current assets (€923,339) and current liabilities
+  (€387,105 trade + €850,000 contingent consideration for Loamin) — a ratio
+  of ~0.75×. It's shown for H1 FY2026 only, with a note that it's driven
+  largely by the newly-recognised Loamin earn-out rather than a change in
+  underlying trading liquidity. It's still not shown for FY2024/FY2025,
+  which only disclose specific components, not full totals.
+- **The "pro-forma cash runway" estimate is shown alongside the actual H1
+  FY2026 outcome, not replaced by it.** The original illustrative estimate
+  (FY2025 cash + gross placement proceeds, FY2025 burn rate assumed) came in
+  higher than what H1 FY2026 actually delivered — operating burn rose
+  materially post-Loamin, and a €124,837 loan repayment wasn't in the
+  original assumption. Rather than quietly update the number, both are shown
+  with an explanation of the variance — this is the more honest way to
+  present an estimate that later turned out to be wrong for good reasons.
 - **The Senus 2030 revenue trajectory chart is a target model, not a
   forecast** — it mechanically compounds the Board's own stated 50% CAGR
   floor from the FY2025 base, purely to give the Board a visual sense of what
   that target implies year by year.
+- **Login is a hardcoded credential gate, not real authentication.** Three
+  demo accounts (CEO / Board / Analyst, all password `senus2030`) exist purely
+  to satisfy "a platform a CEO would log in to and use" for this assessment.
+  A production deployment would sit behind Senus's actual identity provider —
+  this is explicitly out of scope, not an oversight.
 
 ## 6. How I validated the outputs
 
@@ -202,6 +231,15 @@ To enable live AI commentary rather than the deterministic fallback:
 export ANTHROPIC_API_KEY=sk-ant-...
 ```
 
+**Logging in:** the dashboard sits behind a credential gate (see §5 —
+hardcoded for this assessment, not real auth). Use any of:
+
+| Username | Password    |
+|----------|-------------|
+| CEO      | senus2030   |
+| Board    | senus2030   |
+| Analyst  | senus2030   |
+
 ## 8. Deploying it (for the demo video / live link)
 
 - **Backend** → Render / Railway / Fly.io: point at `backend/`, start command
@@ -211,12 +249,56 @@ export ANTHROPIC_API_KEY=sk-ant-...
   `npm run build`, output directory `dist`, and set `VITE_API_BASE` to your
   deployed backend URL (e.g. `https://senus-api.onrender.com/api`).
 
-## 9. What I'd build next with more time
+## 9. Version control workflow
+
+This repo uses a simple two-branch model, appropriate for a solo project with
+a real review step rather than a full GitFlow setup that would be overkill
+here:
+
+- **`main`** — always deployable. Only receives merges via reviewed pull
+  request, never direct commits.
+- **`dev`** — integration branch for work in progress. All feature work
+  (the login screen, source tooltips, H1 FY2026 data integration, etc.) is
+  committed here first.
+
+Workflow: commit to `dev` → open a PR from `dev` into `main` → review the
+diff (self-review is still a review — re-reading your own diff before it
+hits `main` catches mistakes a same-sitting "looks good" pass misses) → merge.
+This is a genuine PR, not a formality: it's where you'd catch something like
+a hardcoded value that should have come from the API, or a copy-paste error
+in a disclosure note.
+
+```bash
+git checkout dev
+git add .
+git commit -m "feat: add login gate, source tooltips, H1 FY2026 data"
+git push origin dev
+
+# Then open a PR dev → main on GitHub, review, and merge.
+# For subsequent work, branch again from dev:
+git checkout -b feature/role-based-views dev
+```
+
+Is a PR *required* for a solo assessment project? No — but using one signals
+the same engineering discipline the brief asks for ("production-quality
+engineering practices"), and it gives you a clean, reviewable diff to point
+to if asked "walk me through what you changed and why" in an interview.
+
+## 10. What I'd build next with more time
 
 - A proper document-diff view so the Board can see exactly which sentence in
-  a new disclosure produced which number, rather than trusting the pipeline.
-- Multi-period support once Senus publishes FY2026 interim/full-year results,
-  with genuine trend lines instead of a two-point FY2024→FY2025 comparison.
+  a new disclosure produced which number, rather than trusting the pipeline —
+  useful now that the platform has already absorbed one new filing (H1
+  FY2026) after initial build.
+- Real authentication (OAuth/SAML against Senus's identity provider) in place
+  of the hardcoded login gate, plus per-user audit logging of who viewed what.
 - Role-based views — a credit provider cares about liquidity and covenant
   headroom first; an equity investor cares about growth and TAM narrative
   first. Right now everyone sees the same sections in the same order.
+- A genuine Current Ratio and DSCR the moment Senus's reporting granularity
+  supports it consistently across periods (H1 FY2026 already discloses more
+  than FY2024/FY2025 did — see §5) — the schema is already built to support
+  this without migration.
+- Automated regression tests (`pytest` + `TestClient`) codifying the manual
+  endpoint checks done during development, so a future data update can't
+  silently break a derived KPI calculation.
