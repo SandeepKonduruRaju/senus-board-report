@@ -145,6 +145,47 @@ layer is additive rather than a single point of failure. I'd recommend
 demoing with the API key set, since the LLM version adapts its framing
 per-section in a way the fallback (intentionally) doesn't.
 
+## 4a. "Ask the Board Pack" — a genuine tool-calling agent
+
+The commentary endpoint above (§4) is "AI-assisted": one call, whole dataset
+in the prompt, model writes prose. `/api/chat` is a step further —
+**AI-native** in the sense that the brief actually asks for: Claude decides
+for itself which data it needs and queries the live database to get it,
+rather than being handed everything up front.
+
+**Architecture:** `backend/app/chat_tools.py` defines six narrow, named
+tools (`get_annual_financials`, `list_periods`, `get_company_profile`,
+`get_strategy_targets`, `get_post_period_events`, `get_disclosure_gaps`) as
+plain Python functions against the real database — each independently unit
+tested with no LLM involved. `backend/app/routers/chat.py` runs an agent
+loop: send the question + tool definitions to Claude, and if it responds
+with `tool_use`, execute exactly those tool calls, feed the results back,
+and repeat (capped at 5 iterations) until Claude has enough grounded data to
+answer in plain text.
+
+**Why this is more than a chatbot skin over the same data:** the API
+response includes `tool_calls` — the exact list of what was queried and
+with what arguments — so every answer is auditable. Ask "why is there no
+ROCE," and the response shows `get_disclosure_gaps()` was called and
+answered from that authoritative source, not derived on the fly from raw
+numbers the model might get subtly wrong. Ask "how has customer
+concentration changed," and you can see it called `get_annual_financials`
+for more than one period rather than pattern-matching on the question text.
+
+**Without `ANTHROPIC_API_KEY`:** open-ended Q&A has no meaningful
+deterministic fallback (unlike §4's commentary, which is really just
+formatting), so a small keyword-matched fallback handles revenue/cash/EBITDA
+questions to keep the feature demoable, and anything else returns a clear
+"configure ANTHROPIC_API_KEY" message rather than a wrong guess.
+
+## 4b. AI-native vs AI-assisted, in one sentence
+
+Section 4's commentary is the model writing about numbers it was handed.
+Section 4a is the model deciding what it needs to know and going to find
+out — the difference is small to describe and, I think, the right one to
+have built given the brief specifically asks for an "AI-native platform,"
+not a dashboard with a paragraph generator attached to it.
+
 ## 5. Key assumptions & judgement calls
 
 I'd rather list these explicitly than have them discovered:

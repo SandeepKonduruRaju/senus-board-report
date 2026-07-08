@@ -6,7 +6,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .routers import financials, insights
+from .routers import financials, insights, chat
 
 app = FastAPI(
     title="Senus PLC Board Report API",
@@ -24,12 +24,13 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=_origins,
     allow_credentials=True,
-    allow_methods=["GET"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
 app.include_router(financials.router)
 app.include_router(insights.router)
+app.include_router(chat.router)
 
 
 @app.get("/", tags=["meta"])

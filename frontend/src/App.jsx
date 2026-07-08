@@ -10,6 +10,7 @@
 import React, { useEffect, useState } from 'react'
 import { api } from './api'
 import Login from './components/Login.jsx'
+import { AskBoardPack } from './components/AskBoardPack.jsx'
 import {
   Overview, GrowthRevenue, Profitability, CashLiquidity,
   SolvencyLeverage, Returns, AIInsights,
@@ -27,6 +28,7 @@ const SECTIONS = [
   { key: 'solvency',       label: 'Solvency & Leverage',idx: '04' },
   { key: 'returns',        label: 'Returns',            idx: '05' },
   { key: 'insights',       label: 'AI Insights',        idx: '06' },
+  { key: 'ask',            label: 'Ask the Board Pack', idx: '07' },
 ]
 
 // ---------------------------------------------------------------------------
@@ -109,6 +111,7 @@ function Dashboard({ user, onLogout }) {
       case 'solvency':      return <SolvencyLeverage {...sectionProps} />
       case 'returns':       return <Returns {...sectionProps} />
       case 'insights':      return <AIInsights {...sectionProps} />
+      case 'ask':           return <AskBoardPack {...sectionProps} />
       default:              return <Overview {...sectionProps} />
     }
   }
