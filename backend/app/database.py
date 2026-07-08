@@ -1,15 +1,16 @@
 """
 Database engine and session management.
 
-SQLite by default (zero-config). Swap to Postgres for production:
-    export DATABASE_URL=postgresql://user:pass@host/dbname
-No code changes required.
+Uses SQLite by default (zero-config for local dev/CI). Switch to Postgres
+for production by setting DATABASE_URL — no code changes required.
 """
 import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 DATABASE_URL: str = os.environ.get("DATABASE_URL", "sqlite:///./senus.db")
+
 _connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 
 engine = create_engine(DATABASE_URL, connect_args=_connect_args)
@@ -22,7 +23,7 @@ class Base(DeclarativeBase):
 
 
 def get_db():
-    """FastAPI dependency — yields a DB session and ensures it closes after each request."""
+    """FastAPI dependency: yield a session and always close it after the request."""
     db: Session = SessionLocal()
     try:
         yield db

@@ -1,16 +1,17 @@
 """
 SQLAlchemy ORM models for the Senus PLC Board Report database.
 
-Column names mirror senus_financials.json keys so seed_db.py can pass
-**row directly without mapping. nullable=True/False is explicit on every
-column so the schema is self-documenting.
+Column names intentionally mirror senus_financials.json keys so seed_db.py
+can unpack rows directly with **row without any mapping layer.
 """
-from sqlalchemy import Column, Float, Integer, String
+from sqlalchemy import Column, Integer, String, Float, Boolean
+
 from .database import Base
 
 
 class Company(Base):
-    """Static company metadata — one row, updated when fundamentals change."""
+    """Static company metadata — one row, refreshed when fundamentals change."""
+
     __tablename__ = "company"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -28,67 +29,95 @@ class Company(Base):
 
 class AnnualFinancial(Base):
     """
-    One row per fiscal year (FY ends 30 June).
+    One row per fiscal year (FY ending 30 June).
 
-    All monetary values in EUR. Nullable columns are those not disclosed
-    for a given period (e.g. customer breakdown only exists for FY2025).
+    All monetary values in EUR. Nullable columns are those the Company has
+    not disclosed or that are unavailable for a given period (e.g. customer
+    breakdown only exists for FY2025+). is_preliminary flags half-year or
+    unaudited periods so the UI can display appropriate caveats.
     """
+
     __tablename__ = "annual_financials"
 
     id = Column(Integer, primary_key=True, index=True)
     fiscal_year = Column(String, unique=True, index=True, nullable=False)
     period_end = Column(String, nullable=False)
+    period_label = Column(String, nullable=False)          # e.g. "FY2025", "H1 FY2026"
+    is_half_year = Column(Boolean, default=False)
+    is_preliminary = Column(Boolean, default=False)        # unaudited / management accounts
 
-    # ── Income statement ──────────────────────────────────────────────
-    turnover = Column(Float, nullable=False)
-    gross_profit = Column(Float, nullable=False)
+    # Income statement
+    turnover = Column(Float, nullable=True)   # nullable to support pending H1 placeholder rows
+    gross_profit = Column(Float, nullable=True)
     cost_of_sales = Column(Float, nullable=True)
-    gross_margin_pct = Column(Float, nullable=False)
-    admin_expenses = Column(Float, nullable=False)
+    gross_margin_pct = Column(Float, nullable=True)
+    admin_expenses = Column(Float, nullable=True)
     rd_expense_pct_revenue = Column(Float, nullable=True)
-    operating_profit_loss = Column(Float, nullable=False)
-    profit_loss_before_tax = Column(Float, nullable=False)
-    profit_loss_after_tax = Column(Float, nullable=False)
+    operating_profit_loss = Column(Float, nullable=True)
+    profit_loss_before_tax = Column(Float, nullable=True)
+    profit_loss_after_tax = Column(Float, nullable=True)
 
-    # ── Balance sheet ─────────────────────────────────────────────────
-    net_assets_liabilities = Column(Float, nullable=False)
-    retained_earnings = Column(Float, nullable=False)
+    # Balance sheet
+    net_assets_liabilities = Column(Float, nullable=True)
+    retained_earnings = Column(Float, nullable=True)
     trade_debtors = Column(Float, nullable=True)
     trade_creditors = Column(Float, nullable=True)
 
-    # ── Cash flow ─────────────────────────────────────────────────────
-    cash_flow_operating = Column(Float, nullable=False)
-    cash_flow_investing = Column(Float, nullable=False)
-    cash_flow_financing = Column(Float, nullable=False)
+    # Cash flow
+    cash_flow_operating = Column(Float, nullable=True)
+    cash_flow_investing = Column(Float, nullable=True)
+    cash_flow_financing = Column(Float, nullable=True)
     net_change_in_cash = Column(Float, nullable=True)
     cash_beginning = Column(Float, nullable=True)
-    cash_end = Column(Float, nullable=False)
+    cash_end = Column(Float, nullable=True)
 
-    # ── Customer KPIs (FY2025 only) ───────────────────────────────────
+    # Customer KPIs
     customers_total = Column(Integer, nullable=True)
     customers_enterprise = Column(Integer, nullable=True)
     customers_independent = Column(Integer, nullable=True)
     customers_rd = Column(Integer, nullable=True)
 
-    # ── Revenue mix ───────────────────────────────────────────────────
+    # Revenue mix
     revenue_channel_enterprise_pct = Column(Float, nullable=True)
     revenue_channel_independent_pct = Column(Float, nullable=True)
     revenue_channel_rd_pct = Column(Float, nullable=True)
     revenue_international_pct = Column(Float, nullable=True)
     revenue_ireland_pct = Column(Float, nullable=True)
 
-    # ── Debt ──────────────────────────────────────────────────────────
+    # Debt
     new_bank_loan_sbci = Column(Float, nullable=True)
     creditors_due_after_1yr_increase = Column(Float, nullable=True)
 
-    # ── Product ACV (FY2025 Enterprise only) ─────────────────────────
+    # Product ACV (Enterprise tier, FY2025+)
     acv_enterprise_soil = Column(Float, nullable=True)
     acv_enterprise_terrain = Column(Float, nullable=True)
     acv_enterprise_era = Column(Float, nullable=True)
 
+    # Additional line items first disclosed in H1 FY2026 (post-Loamin acquisition)
+    other_operating_income = Column(Float, nullable=True)
+    interest_payable = Column(Float, nullable=True)
+    share_capital = Column(Float, nullable=True)
+    share_premium = Column(Float, nullable=True)
+    goodwill = Column(Float, nullable=True)
+    development_costs = Column(Float, nullable=True)
+    tangible_assets = Column(Float, nullable=True)
+    creditors_due_within_1yr = Column(Float, nullable=True)
+    contingent_consideration_loamin = Column(Float, nullable=True)
+
+    # Commercial KPIs disclosed in H1 FY2026 narrative
+    enterprise_customers_closed_in_period = Column(Integer, nullable=True)
+    pipeline_value_closed_in_period_eur = Column(Float, nullable=True)
+    pipeline_value_open_eur = Column(Float, nullable=True)
+    equity_raised_in_period_eur = Column(Float, nullable=True)
+
+    # Source attribution — shown in UI tooltips
+    source_document = Column(String, nullable=True)
+    source_section = Column(String, nullable=True)
+
 
 class PostPeriodEvent(Base):
-    """Material events after the balance sheet date."""
+    """Material events that occurred after the balance sheet date."""
+
     __tablename__ = "post_period_events"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -100,6 +129,7 @@ class PostPeriodEvent(Base):
 
 class StrategyTarget(Base):
     """Board-stated Senus 2030 strategic targets — one row."""
+
     __tablename__ = "strategy_targets"
 
     id = Column(Integer, primary_key=True, index=True)
