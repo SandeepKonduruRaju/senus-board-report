@@ -27,7 +27,7 @@ jobs:
           pip install flake8 pytest
 
       - name: Lint (flake8)
-        run: flake8 app/ data/
+        run: flake8 app/ data/ tests/
 
       - name: Test (pytest)
         run: pytest tests/ -v

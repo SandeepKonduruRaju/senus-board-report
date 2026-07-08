@@ -1,5 +1,4 @@
 """Tests for /api/insights — the AI board commentary endpoint."""
-import os
 
 
 def test_insights_falls_back_without_api_key(client, monkeypatch):
