@@ -6,6 +6,19 @@ async function get(path) {
   return res.json()
 }
 
+async function post(path, body) {
+  const res = await fetch(`${BASE}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    const detail = await res.json().catch(() => ({}))
+    throw new Error(detail.detail || `API error ${res.status} on ${path}`)
+  }
+  return res.json()
+}
+
 export const api = {
   company: () => get('/financials/company'),
   annual: () => get('/financials/annual'),
@@ -14,4 +27,5 @@ export const api = {
   strategyTargets: () => get('/financials/strategy-targets'),
   postPeriodEvents: () => get('/financials/post-period-events'),
   insights: (section) => get(`/insights?section=${section}`),
+  chat: (message, history) => post('/chat', { message, history }),
 }
