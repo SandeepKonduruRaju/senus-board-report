@@ -23,8 +23,8 @@ _origins = [o.strip() for o in _raw_origins.split(",")] if _raw_origins != "*" e
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
