@@ -28,25 +28,32 @@ async def lifespan(app: FastAPI):
 
     Tables are created first (idempotent — a no-op if they already exist),
     since on a truly fresh database even the emptiness-check below would
-    fail with "no such table" otherwise. Checking for existing data before
-    seeding makes the seed itself idempotent too: a normal restart (e.g.
-    after Render's free tier spins down and back up) doesn't redo it
-    unnecessarily.
+    fail with "no such table" otherwise.
+
+    IMPORTANT: the check session is explicitly closed BEFORE calling seed(),
+    not after. seed() does its own DROP TABLE / CREATE TABLE via a separate
+    connection from the same engine's pool — if the check session here is
+    still open (even just holding an uncommitted read) when that happens,
+    SQLite can raise "database is locked" since one connection is dropping
+    tables the other still has open. This was a real bug caught only in
+    production (Render), not in local testing, because SQLite's locking
+    behaviour under concurrent-connection pressure is timing-dependent.
     """
     from .database import Base, engine
 
     Base.metadata.create_all(bind=engine)
 
     db = SessionLocal()
-    try:
-        if db.query(models.Company).first() is None:
-            log.info("Database is empty — running initial seed...")
-            from data.seed_db import seed
-            seed()
-        else:
-            log.info("Database already seeded, skipping.")
-    finally:
-        db.close()
+    is_empty = db.query(models.Company).first() is None
+    db.close()  # release before seed() touches the schema, not after
+
+    if is_empty:
+        log.info("Database is empty — running initial seed...")
+        from data.seed_db import seed
+        seed()
+    else:
+        log.info("Database already seeded, skipping.")
+
     yield
 
 
